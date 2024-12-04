@@ -3,6 +3,8 @@ use std::{cell::RefCell, rc::Rc};
 use boolify::{generate_bristol, BoolWire, CircuitOutput, IdGenerator, ValueWire};
 use bristol_circuit::BristolCircuit;
 
+const INPUT_SIZE: usize = 30;
+
 struct JobCriteria {
     position: ValueWire,
     commitment: ValueWire,
@@ -13,34 +15,57 @@ struct JobCriteria {
     salary: ValueWire,
 }
 
-fn generate_job_criteria(prefix: &str, id_gen: &Rc<RefCell<IdGenerator>>) -> JobCriteria {
-    JobCriteria {
-        position: ValueWire::new_input(&format!("{}_position", prefix), 1, id_gen),
-        commitment: ValueWire::new_input(&format!("{}_commitment", prefix), 1, id_gen),
-        education: (0..4)
-            .map(|i| ValueWire::new_input(&format!("{}_education_{}", prefix, i), 1, id_gen))
-            .collect(),
-        experience: (0..8)
-            .map(|i| ValueWire::new_input(&format!("{}_experience_{}", prefix, i), 1, id_gen))
-            .collect(),
-        interests: (0..4)
-            .map(|i| ValueWire::new_input(&format!("{}_interests_{}", prefix, i), 1, id_gen))
-            .collect(),
-        company_stage: (0..4)
-            .map(|i| ValueWire::new_input(&format!("{}_company_stage_{}", prefix, i), 1, id_gen))
-            .collect(),
-        salary: ValueWire::new_input(&format!("{}_salary", prefix), 8, id_gen),
-    }
+fn extract_bits(input: &ValueWire, start: usize, size: usize) -> Vec<ValueWire> {
+    input.bits[start..start + size]
+        .iter()
+        .map(|bit| BoolWire::as_value(bit))
+        .collect()
+}
+
+fn extract_multi_bit_value(
+    input: &ValueWire,
+    start: usize,
+    size: usize,
+    id_gen: &Rc<RefCell<IdGenerator>>,
+) -> ValueWire {
+    // Create a new multi-bit input
+    let mut result = ValueWire::new_input(&format!("temp_{}", start), size, id_gen);
+
+    // Copy the bits from the input
+    result.bits = input.bits[start..start + size].to_vec();
+
+    result
 }
 
 pub fn hiring() {
     let id_gen = IdGenerator::new_rc_refcell();
 
-    // Generate inputs for both parties using the new structure
-    let a = generate_job_criteria("a", &id_gen);
-    let b = generate_job_criteria("b", &id_gen);
+    // Create just two input wires - one for each party
+    let a_input = ValueWire::new_input("a", INPUT_SIZE, &id_gen);
+    let b_input = ValueWire::new_input("b", INPUT_SIZE, &id_gen);
 
-    // Implement the matching logic
+    // Extract individual bits from the input wires
+    let a = JobCriteria {
+        position: extract_bits(&a_input, 0, 1)[0].clone(),
+        commitment: extract_bits(&a_input, 1, 1)[0].clone(),
+        education: extract_bits(&a_input, 2, 4),
+        experience: extract_bits(&a_input, 6, 8),
+        interests: extract_bits(&a_input, 14, 4),
+        company_stage: extract_bits(&a_input, 18, 4),
+        salary: extract_multi_bit_value(&a_input, 22, 8, &id_gen),
+    };
+
+    let b = JobCriteria {
+        position: extract_bits(&b_input, 0, 1)[0].clone(),
+        commitment: extract_bits(&b_input, 1, 1)[0].clone(),
+        education: extract_bits(&b_input, 2, 4),
+        experience: extract_bits(&b_input, 6, 8),
+        interests: extract_bits(&b_input, 14, 4),
+        company_stage: extract_bits(&b_input, 18, 4),
+        salary: extract_multi_bit_value(&b_input, 22, 8, &id_gen),
+    };
+
+    // Rest of the matching logic remains the same
     let compatible_pos = ValueWire::bit_xor(&a.position, &b.position);
     let a_recruiter = a.position.clone();
 
@@ -58,9 +83,6 @@ pub fn hiring() {
         experience_match = ValueWire::bit_or(&experience_match, &match_i);
     }
 
-    // Salary match
-    let salary_match = BoolWire::as_value(&ValueWire::greater_than(&a.salary, &b.salary));
-
     // Interest overlap
     let mut interest_overlap = ValueWire::bit_and(&a.interests[0], &b.interests[0]);
     for i in 1..4 {
@@ -77,6 +99,9 @@ pub fn hiring() {
 
     // Commitment overlap (!a_commitment | b_commitment)
     let commitment_overlap = ValueWire::bit_or(&ValueWire::bit_not(&a.commitment), &b.commitment);
+
+    // Salary match (proper comparison)
+    let salary_match = BoolWire::as_value(&ValueWire::greater_than(&a.salary, &b.salary));
 
     // Final result
     let result = [
@@ -101,5 +126,5 @@ pub fn hiring() {
 
     // Write to file
     let output = BristolCircuit::get_bristol_string(&bristol_circuit).unwrap();
-    std::fs::write("job_matching.txt", output).unwrap();
+    std::fs::write("job_matching_two_input.txt", output).unwrap();
 }

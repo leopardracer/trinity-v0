@@ -1,0 +1,58 @@
+{
+  "name": "jigg",
+  "version": "1.0.1",
+  "description": "JavaScript Implementation of Garbled Gates (two-party computation library for boolean circuits)",
+  "main": "src/jigg.js",
+  "dependencies": {
+    "casm": "^0.2.2",
+    "libsodium-wrappers-sumo": "^0.7.6",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "browserify": "^16.5.0",
+    "child_process": "^1.0.2",
+    "docdash": "^1.1.1",
+    "eslint": "^5.16.0",
+    "eslint-plugin-mocha": "^6.2.2",
+    "eslint-plugin-requirejs": "^4.0.0",
+    "express": "^4.17.1",
+    "jsdoc": "^4.0.4",
+    "mocha": "^10.8.2",
+    "neptune-notebook": "^1.3.1"
+  },
+  "scripts": {
+    "test": "mocha test/test.js --timeout 120000",
+    "build": "browserify src/jiggClient.js --debug --s JIGG -o dist/jigg.js",
+    "docs": "jsdoc -r src -c jsdoc.conf.json",
+    "casm": "node node_modules/casm/casm.js",
+    "lint": "eslint ./src/ ./demo/",
+    "tutorial": "node tutorial/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/multiparty/jigg.git"
+  },
+  "keywords": [
+    "Garbled-Circuit",
+    "2PC"
+  ],
+  "author": "Wyatt Howe",
+  "contributors": [
+    {
+      "name": "Kinan Dak Albab",
+      "email": "babman@bu.edu",
+      "url": "http://cs-people.bu.edu/babman/"
+    },
+    {
+      "name": "Andrei Lapets",
+      "email": "a@lapets.io",
+      "url": "https://lapets.io"
+    }
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/multiparty/jigg/issues"
+  },
+  "legacy_homepage": "https://github.com/wyatt-howe/jigg#readme",
+  "homepage": "https://github.com/multiparty/jigg#readme"
+}

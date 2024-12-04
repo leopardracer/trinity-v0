@@ -1,0 +1,14 @@
+{
+  "name": "laconic-ot",
+  "version": "0.1.0",
+  "license": "MIT",
+  "files": [
+    "laconic_ot_bg.wasm",
+    "laconic_ot.js",
+    "laconic_ot.d.ts",
+    "LICENSE.txt"
+  ],
+  "module": "laconic_ot.js",
+  "types": "laconic_ot.d.ts",
+  "sideEffects": false
+}

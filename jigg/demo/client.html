@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Garbled Circuit JS 2PC</title>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="/dist/jigg.js" type="text/javascript"></script>
+  </head>
+  <body style="font-family: sans-serif; margin: 2em;">
+    <h1 style="margin-bottom: 0.25em;">Garbled Circuits in JavaScript</h1>
+    <h3 style="margin-top: 0em;">Choose your circuit (<a href="https://homes.esat.kuleuven.be/~nsmart/MPC/">Bristol Fashion MPC Circuits</a>)</h3>
+
+    <select id="circuit">
+      <optgroup label="Arithmetic">
+        <option value="arith-add-32-bit-old.txt" selected="selected">32-bit Addition</option>
+        <option value="arith-add-64-bit-old.txt">64-bit Addition</option>
+        <option value="arith-add-64-bit-truncated.txt">64-bit Truncated Addition</option>
+        <option value="arith-div-64-bit.txt">64-bit Division</option>
+        <option value="arith-mul-32-bit-old.txt">32-bit Multiplication</option>
+        <option value="arith-mul-64-bit-truncated.txt">64-bit Truncated Multiplication</option>
+        <option value="arith-mul-64-bit.txt">64-bit Multiplication</option>
+        <option value="arith-sub-64-bit.txt">64-bit Subtraction</option>
+      </optgroup>
+
+      <optgroup label="Comparison">
+        <option value="compare-eq-zero-64-bit.txt">64-bit Equal to Zero (input 32-bits each)</option>
+        <option value="compare-eq-zero-128-bit-with-nan.txt">128-bit Equal to Zero</option>
+        <option value="compare-lt-32-bit-signed-old.txt">32-bit Signed Less Than</option>
+        <option value="compare-lt-32-bit-unsigned-old.txt">32-bit Unsigned Less Than</option>
+        <option value="compare-lteq-32-bit-signed-old.txt">32-bit Signed Less Than or Equal</option>
+        <option value="compare-lteq-32-bit-unsigned-old.txt">32-bit Unsigned Less Than or Equal</option>
+      </optgroup>
+
+      <optgroup label="Logical">
+        <option value="logic-and-4-bit.txt">4-bit AND</option>
+        <option value="logic-and-8-bit.txt">8-bit AND</option>
+        <option value="logic-bristol-test.txt">Bristol logical test</option>
+        <option value="logic-universal-1-bit.txt">1-bit Universal Circuit</option>
+      </optgroup>
+
+      <optgroup label="Ciphers">
+        <option value="des-expanded-old.txt">DES (expanded)</option>
+        <option value="des-non-expanded-old.txt">DES (non-expanded)</option>
+        <option value="aes-128-expanded-old.txt">AES-128 (expanded)</option>
+        <option value="aes-128-non-expanded-old.txt">AES-128 (non-expanded)</option>
+        <option value="aes-128-reverse.txt">AES-128 (reversed with CASM)</option>
+        <option value="aes-128-ecb-encrypt.txt">AES-128 Encrypt (synthesized with BFCL)</option>
+        <option value="aes-128-ecb-decrypt.txt">AES-128 Decrypt (synthesized with BFCL)</option>
+        <option value="aes-192.txt">AES-192</option>
+        <option value="aes-256.txt">AES-256</option>
+      </optgroup>
+
+      <optgroup label="Hashing">
+        <option value="md5-old.txt">MD5</option>
+        <option value="sha-1-old.txt">SHA-1</option>
+        <option value="sha-256-old.txt">SHA-256 (old)</option>
+        <option value="sha-256-two-block.txt">SHA-256 double block</option>
+        <option value="sha-256-reverse.txt">SHA-256 (reversed with CASM)</option>
+        <option value="sha-512.txt">SHA-512</option>
+        <option value="keccak-f.txt">SHA-3</option>
+      </optgroup>
+    </select>
+
+    <select id="partytype">
+      <option value="Garbler">Garbler</option>
+      <option value="Evaluator" selected="selected">Evaluator</option>
+    </select>
+
+    <!-- <p>Enter a 64 digit (256bit) haxadecimal string to compute on:<p> -->
+    <br>
+    <p style="margin-top: 1em; margin-bottom: 0;">Enter a string to compute on and the maximum encryptions to run in parallel:</p>
+    <select id="base" onchange="countbits()">
+      <option value="number">Decimal</option>
+      <option value="bits">Binary</option>
+      <option value="hex">Hexidecimal</option>
+    </select>&nbsp;<input id="input" onkeyup="countbits()" autocomplete="off" style="margin-top: 1em; margin-bottom: 0.5em; font-family: monospace; width: 40em;">
+    <button id="button" onclick="start()">Compute</button>
+    <br>
+    <pre id="bitsCount">Entered 0 bits</pre><br>
+    <div id="results"></div>
+  </body>
+
+  <script type="text/javascript" src="client/client.js"></script>
+  <script type="text/javascript">
+    if (window.Worker) {
+      document.getElementById('results').innerHTML += '<h4>Web Workers are supported on your browser! Circuits will evaluate in the background</h4>';
+    } else {
+      document.getElementById('results').innerHTML += '<h4>Web Workers are not supported on your browser! Circuits will evaluate in the foreground.' +
+        'The webpage may become irresponsive for a few seconds with large circuits.</h4>';
+    }
+  </script>
+</html>
