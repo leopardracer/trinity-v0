@@ -10,6 +10,6 @@ The specific example used is a private hiring matcher. This is the same function
 
 This repo uses code from a number of different projects:
 
-- [Boolify](https://github.com/voltrevo/boolify) to write a hiring 2PC circuit in Bristol format
-- [JIGG](https://github.com/multiparty/jigg) for JavaScript native Garbled Circuit generation & evaluation
-- [research-we-kzg](https://github.com/rot256/research-we-kzg), the original paper implementation of KZG Witness Encryption
+- `/circuits`: [Boolify](https://github.com/voltrevo/boolify) to write a hiring 2PC circuit in Bristol format
+- `/jigg`: [JIGG](https://github.com/multiparty/jigg) for JavaScript native Garbled Circuit generation & evaluation
+- `/laconic`: [research-we-kzg](https://github.com/rot256/research-we-kzg), the original paper implementation of KZG Witness Encryption
