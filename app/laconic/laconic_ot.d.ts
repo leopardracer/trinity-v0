@@ -12,6 +12,15 @@ export class WasmCommitmentKey {
 * @returns {WasmCommitmentKey}
 */
   static setup(message_length: number): WasmCommitmentKey;
+/**
+* @returns {Uint8Array}
+*/
+  serialize(): Uint8Array;
+/**
+* @param {Uint8Array} data
+* @returns {WasmCommitmentKey}
+*/
+  static deserialize(data: Uint8Array): WasmCommitmentKey;
 }
 /**
 */
@@ -72,12 +81,13 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly start: () => void;
   readonly __wbg_wasmcommitmentkey_free: (a: number, b: number) => void;
   readonly __wbg_wasmreceiver_free: (a: number, b: number) => void;
   readonly __wbg_wasmsender_free: (a: number, b: number) => void;
   readonly __wbg_wasmmessage_free: (a: number, b: number) => void;
   readonly wasmcommitmentkey_setup: (a: number, b: number) => void;
+  readonly wasmcommitmentkey_serialize: (a: number, b: number) => void;
+  readonly wasmcommitmentkey_deserialize: (a: number, b: number, c: number) => void;
   readonly wasmreceiver_new: (a: number, b: number, c: number) => number;
   readonly wasmreceiver_recv: (a: number, b: number, c: number, d: number) => void;
   readonly wasmreceiver_commitment: (a: number, b: number) => void;
@@ -85,9 +95,10 @@ export interface InitOutput {
   readonly wasmreceiver_serialize: (a: number, b: number) => void;
   readonly wasmsender_new: (a: number, b: number, c: number, d: number) => void;
   readonly wasmsender_send: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => void;
+  readonly start: () => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
-  readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
+  readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_exn_store: (a: number) => void;
   readonly __wbindgen_start: () => void;

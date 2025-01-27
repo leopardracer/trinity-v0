@@ -41,9 +41,18 @@
           const setupTime = performance.now() - startSetup;
           log(`✅ Commitment key generated in ${setupTime.toFixed(2)}ms`);
 
+          // Create serialized key with timing
+          const startCkSerialize = performance.now();
+          const serializedCk = ck.serialize();
+          const deserializedCk = WasmCommitmentKey.deserialize(serializedCk);
+          const ckSerializeTime = performance.now() - startCkSerialize;
+          log(
+            `✅ Commitment key serialized in ${ckSerializeTime.toFixed(2)}ms`
+          );
+
           // Create receiver with timing
           const startReceiver = performance.now();
-          const receiver = WasmReceiver.new(ck, bits);
+          const receiver = WasmReceiver.new(deserializedCk, bits);
           const receiverTime = performance.now() - startReceiver;
           log(`✅ Receiver initialized in ${receiverTime.toFixed(2)}ms`);
 
@@ -55,7 +64,7 @@
 
           // Create sender with timing
           const startSender = performance.now();
-          const sender = WasmSender.new(ck, commitment);
+          const sender = WasmSender.new(deserializedCk, commitment);
           const senderTime = performance.now() - startSender;
           log(`✅ Sender initialized in ${senderTime.toFixed(2)}ms`);
 
@@ -87,7 +96,7 @@
           const startDeserialize = performance.now();
           const deserializedReceiver = WasmReceiver.deserialize(
             serializedReceiver,
-            ck
+            deserializedCk
           );
           const deserializeTime = performance.now() - startDeserialize;
           log(`✅ Receiver deserialized in ${deserializeTime.toFixed(2)}ms`);

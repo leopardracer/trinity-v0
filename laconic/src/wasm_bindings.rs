@@ -46,6 +46,24 @@ impl WasmCommitmentKey {
             })
             .map_err(|_| JsError::new("Failed to setup commitment key").into())
     }
+
+    #[wasm_bindgen]
+    pub fn serialize(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        self.commitment_key
+            .serialize_uncompressed(&mut bytes)
+            .unwrap();
+        bytes
+    }
+
+    #[wasm_bindgen]
+    pub fn deserialize(data: &[u8]) -> Result<WasmCommitmentKey, JsValue> {
+        CommitmentKey::<E, Domain>::deserialize_uncompressed(data)
+            .map(|key| WasmCommitmentKey {
+                commitment_key: key,
+            })
+            .map_err(|_| JsError::new("Failed to deserialize commitment key").into())
+    }
 }
 
 // Receiver implementations
@@ -115,5 +133,30 @@ impl WasmSender {
 
         let msg = self.sender.send(&mut rng, i, m0_array, m1_array);
         Ok(WasmMessage { message: msg })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_commitment_key_serialization() {
+        // Create a new commitment key
+        let ck = WasmCommitmentKey::setup(32).expect("Failed to setup commitment key");
+
+        // Serialize
+        let serialized = ck.serialize();
+
+        // Deserialize
+        let deserialized = WasmCommitmentKey::deserialize(&serialized)
+            .expect("Failed to deserialize commitment key");
+
+        // Serialize again and compare bytes
+        let serialized_again = deserialized.serialize();
+        assert_eq!(
+            serialized, serialized_again,
+            "Serialized bytes should match"
+        );
     }
 }

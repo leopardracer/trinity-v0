@@ -46,11 +46,6 @@ function takeObject(idx) {
     dropObject(idx);
     return ret;
 }
-/**
-*/
-export function start() {
-    wasm.start();
-}
 
 let cachedDataViewMemory0 = null;
 
@@ -61,11 +56,9 @@ function getDataViewMemory0() {
     return cachedDataViewMemory0;
 }
 
-function _assertClass(instance, klass) {
-    if (!(instance instanceof klass)) {
-        throw new Error(`expected instance of ${klass.name}`);
-    }
-    return instance.ptr;
+function getArrayU8FromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len);
 }
 
 let WASM_VECTOR_LEN = 0;
@@ -77,9 +70,16 @@ function passArray8ToWasm0(arg, malloc) {
     return ptr;
 }
 
-function getArrayU8FromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len);
+function _assertClass(instance, klass) {
+    if (!(instance instanceof klass)) {
+        throw new Error(`expected instance of ${klass.name}`);
+    }
+    return instance.ptr;
+}
+/**
+*/
+export function start() {
+    wasm.start();
 }
 
 const cachedTextEncoder = (typeof TextEncoder !== 'undefined' ? new TextEncoder('utf-8') : { encode: () => { throw Error('TextEncoder not available') } } );
@@ -178,6 +178,43 @@ export class WasmCommitmentKey {
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
             wasm.wasmcommitmentkey_setup(retptr, message_length);
+            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+            if (r2) {
+                throw takeObject(r1);
+            }
+            return WasmCommitmentKey.__wrap(r0);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+    * @returns {Uint8Array}
+    */
+    serialize() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.wasmcommitmentkey_serialize(retptr, this.__wbg_ptr);
+            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+            var v1 = getArrayU8FromWasm0(r0, r1).slice();
+            wasm.__wbindgen_free(r0, r1 * 1, 1);
+            return v1;
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+    * @param {Uint8Array} data
+    * @returns {WasmCommitmentKey}
+    */
+    static deserialize(data) {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            const ptr0 = passArray8ToWasm0(data, wasm.__wbindgen_malloc);
+            const len0 = WASM_VECTOR_LEN;
+            wasm.wasmcommitmentkey_deserialize(retptr, ptr0, len0);
             var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
             var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
             var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);

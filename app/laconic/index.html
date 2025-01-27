@@ -22,7 +22,7 @@
 
       async function runTests() {
         try {
-          const power = 6; // 2^3 = 8 bits
+          const power = 5; // 2^3 = 8 bits
           const size = Math.pow(2, power);
 
           const startTotal = performance.now();
@@ -41,9 +41,18 @@
           const setupTime = performance.now() - startSetup;
           log(`✅ Commitment key generated in ${setupTime.toFixed(2)}ms`);
 
+          // Create serialized key with timing
+          const startCkSerialize = performance.now();
+          const serializedCk = ck.serialize();
+          const deserializedCk = WasmCommitmentKey.deserialize(serializedCk);
+          const ckSerializeTime = performance.now() - startCkSerialize;
+          log(
+            `✅ Commitment key serialized in ${ckSerializeTime.toFixed(2)}ms`
+          );
+
           // Create receiver with timing
           const startReceiver = performance.now();
-          const receiver = WasmReceiver.new(ck, bits);
+          const receiver = WasmReceiver.new(deserializedCk, bits);
           const receiverTime = performance.now() - startReceiver;
           log(`✅ Receiver initialized in ${receiverTime.toFixed(2)}ms`);
 
@@ -55,7 +64,7 @@
 
           // Create sender with timing
           const startSender = performance.now();
-          const sender = WasmSender.new(ck, commitment);
+          const sender = WasmSender.new(deserializedCk, commitment);
           const senderTime = performance.now() - startSender;
           log(`✅ Sender initialized in ${senderTime.toFixed(2)}ms`);
 
@@ -80,14 +89,14 @@
             const sendTime = performance.now() - startSend;
             totalSendTime += sendTime;
             messages.push(msg);
-            log(`Send ${i}: ✅ (send: ${sendTime.toFixed(2)}ms)`);
           }
+          log(`\nTotal send time: ${totalSendTime.toFixed(2)}ms`);
 
           // Deserialize receiver to test
           const startDeserialize = performance.now();
           const deserializedReceiver = WasmReceiver.deserialize(
             serializedReceiver,
-            ck
+            deserializedCk
           );
           const deserializeTime = performance.now() - startDeserialize;
           log(`✅ Receiver deserialized in ${deserializeTime.toFixed(2)}ms`);
@@ -101,13 +110,11 @@
 
             const expected = bits[i] ? m1 : m0;
             const matches = received.every((byte, i) => byte === expected[i]);
-            log(
-              `Receive ${i}: ${
-                matches ? "✅" : "❌"
-              } (receive: ${receiveTime.toFixed(2)}ms)`
-            );
+            if (!matches) {
+              log(`❌ Receive ${i}: ❌ (receive: ${receiveTime.toFixed(2)}ms)`);
+            }
           }
-
+          log(`\nTotal receive time: ${totalReceiveTime.toFixed(2)}ms`);
           const totalTime = performance.now() - startTotal;
           log(`\nTotal time: ${totalTime.toFixed(2)}ms`);
         } catch (error) {

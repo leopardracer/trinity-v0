@@ -70,6 +70,8 @@ export default function JobMatching({
       if (role === "Evaluator" && !garbledData) {
         // Generate commitment for evaluator's input
         const binaryUint8Array = new Uint8Array(binaryArray);
+        console.log("Type of commitmentKey:", typeof commitmentKey);
+        console.log(commitmentKey);
         const receiver = WasmReceiver.new(commitmentKey, binaryUint8Array);
         const commitment = receiver.commitment();
         setSerializedReceiver(receiver.serialize());

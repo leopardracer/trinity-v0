@@ -5,8 +5,7 @@
   "files": [
     "laconic_ot_bg.wasm",
     "laconic_ot.js",
-    "laconic_ot.d.ts",
-    "LICENSE.txt"
+    "laconic_ot.d.ts"
   ],
   "module": "laconic_ot.js",
   "types": "laconic_ot.d.ts",
