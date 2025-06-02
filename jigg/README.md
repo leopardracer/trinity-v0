@@ -63,7 +63,7 @@ node demo/party.js 3000 Evaluator 00000000000000000000000000000000 hex aes-128-r
 
 ### Server + Garbler/Evaluator
 
-The server may also run as a garbler or evaluator. You can acheive this by running the server with
+The server may also run as a garbler or evaluator. You can achieve this by running the server with
 the same arguments as a party:
 ```shell
 node demo/server.js <port> <role> <input> <encoding> <circuitName>
